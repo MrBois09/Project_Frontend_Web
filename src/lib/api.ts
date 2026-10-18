@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api").replace(/\/$/, "");
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "https://proj-backend-web.vercel.app/api").replace(/\/$/, "");
 
 export type ApiResponse<T> = { success: boolean; message: string; data: T; pagination?: { page: number; limit: number; total: number; totalPages: number } };
 
