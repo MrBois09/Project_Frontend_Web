@@ -7,7 +7,7 @@ import { profileApi } from "../lib/api";
 const favoriteTagOptions = ["Action", "RPG", "Adventure", "FPS", "Strategy", "Horror", "Indie"];
 
 function RegisterPage() {
-  const { register, logout, error } = useAuth(); const navigate = useNavigate();
+  const { register, login, error } = useAuth(); const navigate = useNavigate();
   const [step, setStep] = useState(1); const [submitting, setSubmitting] = useState(false); const [formError, setFormError] = useState<string | null>(null);
   const [registeredDisplayName, setRegisteredDisplayName] = useState(""); const [favoriteTags, setFavoriteTags] = useState<string[]>([]); const [avatarPreview, setAvatarPreview] = useState<string | null>(null); const [avatarFile, setAvatarFile] = useState<File | null>(null); const [accountCreated, setAccountCreated] = useState(false); const avatarInput = useRef<HTMLInputElement>(null);
   const [pendingAccount, setPendingAccount] = useState<{ username: string; email: string; password: string; confirmPassword: string } | null>(null);
@@ -21,6 +21,7 @@ function RegisterPage() {
         await register({ ...pendingAccount, displayName: registeredDisplayName });
         setAccountCreated(true);
       }
+      await login(pendingAccount.email, pendingAccount.password);
       await profileApi.update({
         displayName: String(values.get("displayName")).trim(),
         username: pendingAccount.username,
@@ -28,8 +29,7 @@ function RegisterPage() {
         favoriteTags,
       });
       if (avatarFile) await profileApi.uploadAvatar(avatarFile);
-      await logout();
-      navigate("/login");
+      navigate("/profile");
     } catch (e) { setFormError(e instanceof Error ? e.message : "Unable to save profile"); } finally { setSubmitting(false); }
   }
   function selectAvatar(event: React.ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { setFormError("Choose a JPG, PNG, or WebP image."); event.target.value = ""; return; } if (file.size > 5 * 1024 * 1024) { setFormError("Avatar images must be 5 MB or smaller."); return; } setFormError(null); setAvatarFile(file); setAvatarPreview(URL.createObjectURL(file)); }
