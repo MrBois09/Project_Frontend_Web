@@ -7,9 +7,9 @@ import { gamesApi, reviewsApi, type BackendGame, type Review } from "../lib/api"
 const popularTags = ["Gameplay", "Story", "Graphics", "Performance", "Multiplayer"];
 const filters = [{ label: "All reviews", sort: "mostRecent" }, { label: "Most helpful", sort: "mostHelpful" }, { label: "Highest rated", sort: "highestRating" }, { label: "Lowest rated", sort: "lowestRating" }] as const;
 
-function idOf(value: string | { id?: string; _id?: string } | undefined) { return typeof value === "string" ? value : value?.id || value?._id; }
+function idOf(value: string | { id?: string; _id?: string } | null | undefined) { return typeof value === "string" ? value : value?.id || value?._id; }
 function authorOf(review: Review) { return typeof review.userId === "object" ? review.userId : undefined; }
-function gameOf(review: Review) { return typeof review.gameId === "object" ? review.gameId : undefined; }
+function gameOf(review: Review) { return review.gameId && typeof review.gameId === "object" ? review.gameId : undefined; }
 
 function AllReviewsPage() {
   const { user, loading: authLoading } = useAuth(); const navigate = useNavigate();

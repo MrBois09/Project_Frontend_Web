@@ -63,8 +63,8 @@ function HomePage() {
   const reviewedGames = recentReviews
     .filter((review): review is Review => Boolean(review && review.gameId))
     .filter((review, index, reviews) => {
-      const gameId = typeof review.gameId === "object" ? (review.gameId.id || review.gameId._id) : review.gameId;
-      return reviews.findIndex((candidate) => (typeof candidate.gameId === "object" ? (candidate.gameId.id || candidate.gameId._id) : candidate.gameId) === gameId) === index;
+      const gameId = typeof review.gameId === "object" ? (review.gameId?.id || review.gameId?._id) : review.gameId;
+      return reviews.findIndex((candidate) => (typeof candidate.gameId === "object" ? (candidate.gameId?.id || candidate.gameId?._id) : candidate.gameId) === gameId) === index;
     }).slice(0, 3);
   const isFeaturedWishlisted = featuredGame ? isWishlisted(featuredGame.id) : false;
 
@@ -174,7 +174,7 @@ function HomePage() {
             <Link to="/reviews">All reviews →</Link>
           </div>
           {reviewedGames.length ? reviewedGames.map((review) => {
-            const reviewGame = typeof review.gameId === "object" ? review.gameId : undefined;
+            const reviewGame = review.gameId && typeof review.gameId === "object" ? review.gameId : undefined;
             const reviewer = typeof review.userId === "object" ? review.userId : undefined;
             const gameId = reviewGame?.id || reviewGame?._id;
             return <article className="review-card" key={review.id || review._id}>
