@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import GameCard from "../components/GameCard";
+import ReviewerIdentity from "../components/ReviewerIdentity";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
 import { gamesApi, reviewsApi, toGame, type BackendGame, type HomeGame, type Review } from "../lib/api";
@@ -175,17 +176,10 @@ function HomePage() {
           {reviewedGames.length ? reviewedGames.map((review) => {
             const reviewGame = typeof review.gameId === "object" ? review.gameId : undefined;
             const reviewer = typeof review.userId === "object" ? review.userId : undefined;
-            const initials = (reviewer?.displayName || reviewer?.username || "G").slice(0, 2).toUpperCase();
             const gameId = reviewGame?.id || reviewGame?._id;
             return <article className="review-card" key={review.id || review._id}>
             <div className="review-top">
-              <div className="reviewer">
-                <span className="avatar">{initials}</span>
-                <span>
-                  <b>{reviewer?.displayName || "Community member"}</b>
-                  <small>{reviewer?.username ? `@${reviewer.username}` : "Recent reviewer"}</small>
-                </span>
-              </div>
+              <ReviewerIdentity username={reviewer?.username} displayName={reviewer?.displayName} avatarUrl={reviewer?.avatarUrl} fallback="Community member" />
               <span className="review-time">{formatRelativeTime(review.createdAt)}</span>
             </div>
             <div className="review-game">

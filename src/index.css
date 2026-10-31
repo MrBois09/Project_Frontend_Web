@@ -1094,7 +1094,7 @@ button {
 .profile-cover {
   position: relative;
   overflow: hidden;
-  padding-top: 100px;
+  padding-top: 48px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
@@ -1109,6 +1109,7 @@ button {
 .profile-wrap {
   position: relative;
   display: flex;
+  width: 100%;
   max-width: 1236px;
   align-items: end;
   gap: 23px;
@@ -1120,7 +1121,9 @@ button {
   display: grid;
   width: 112px;
   height: 112px;
+  aspect-ratio: 1;
   flex: none;
+  overflow: hidden;
   place-items: center;
   border: 3px solid var(--green);
   border-radius: 50%;
@@ -1247,6 +1250,20 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.reviewer-link {
+  border-radius: 8px;
+}
+
+.reviewer-link:hover b,
+.reviewer-link:focus-visible b {
+  color: var(--green);
+}
+
+.reviewer-link:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
 }
 
 .reviewer .avatar {
@@ -2583,13 +2600,18 @@ button {
   .profile-wrap {
     align-items: center;
     flex-wrap: wrap;
-    padding: 0 18px 25px;
+    gap: 14px;
+    padding: 0 18px 20px;
   }
 
   .profile-avatar {
     width: 80px;
     height: 80px;
     font-size: 24px;
+  }
+
+  .profile-cover {
+    padding-top: 32px;
   }
 
   .profile-wrap h1 {
