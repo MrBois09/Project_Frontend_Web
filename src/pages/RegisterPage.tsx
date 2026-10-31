@@ -7,7 +7,7 @@ import { profileApi } from "../lib/api";
 const favoriteTagOptions = ["Action", "RPG", "Adventure", "FPS", "Strategy", "Horror", "Indie"];
 
 function RegisterPage() {
-  const { register, logout, error } = useAuth(); const navigate = useNavigate();
+  const { register, login, error } = useAuth(); const navigate = useNavigate();
   const [step, setStep] = useState(1); const [submitting, setSubmitting] = useState(false); const [formError, setFormError] = useState<string | null>(null);
   const [registeredDisplayName, setRegisteredDisplayName] = useState(""); const [favoriteTags, setFavoriteTags] = useState<string[]>([]); const [avatarPreview, setAvatarPreview] = useState<string | null>(null); const [avatarFile, setAvatarFile] = useState<File | null>(null); const [accountCreated, setAccountCreated] = useState(false); const avatarInput = useRef<HTMLInputElement>(null);
   const [pendingAccount, setPendingAccount] = useState<{ username: string; email: string; password: string; confirmPassword: string } | null>(null);
@@ -17,10 +17,25 @@ function RegisterPage() {
     if (favoriteTags.length !== 3) { setFormError("Choose exactly 3 favorite game tags to continue."); return; }
     if (!pendingAccount) { setFormError("Please complete the account information first."); setStep(1); return; }
     setSubmitting(true); try {
+      let signedIn = false;
       if (!accountCreated) {
-        await register({ ...pendingAccount, displayName: registeredDisplayName });
-        setAccountCreated(true);
+        try {
+          await register({ ...pendingAccount, displayName: registeredDisplayName });
+          setAccountCreated(true);
+        } catch (registrationError) {
+          try {
+            await login(pendingAccount.email, pendingAccount.password);
+            setAccountCreated(true);
+            signedIn = true;
+          } catch (loginError) {
+            if (registrationError instanceof Error && loginError instanceof Error) {
+              throw new Error(`${registrationError.message} ${loginError.message}`);
+            }
+            throw registrationError;
+          }
+        }
       }
+      if (!signedIn) await login(pendingAccount.email, pendingAccount.password);
       await profileApi.update({
         displayName: String(values.get("displayName")).trim(),
         username: pendingAccount.username,
@@ -28,8 +43,7 @@ function RegisterPage() {
         favoriteTags,
       });
       if (avatarFile) await profileApi.uploadAvatar(avatarFile);
-      await logout();
-      navigate("/login");
+      navigate("/profile");
     } catch (e) { setFormError(e instanceof Error ? e.message : "Unable to save profile"); } finally { setSubmitting(false); }
   }
   function selectAvatar(event: React.ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { setFormError("Choose a JPG, PNG, or WebP image."); event.target.value = ""; return; } if (file.size > 5 * 1024 * 1024) { setFormError("Avatar images must be 5 MB or smaller."); return; } setFormError(null); setAvatarFile(file); setAvatarPreview(URL.createObjectURL(file)); }
