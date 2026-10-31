@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import GameCard from "../components/GameCard";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
-import { gamesApi, reviewsApi, toGame, type HomeGame, type Review } from "../lib/api";
+import { gamesApi, reviewsApi, toGame, type BackendGame, type HomeGame, type Review } from "../lib/api";
 import { formatReviewCount, orderedGameTags } from "../data/games";
 
 const categories = [
@@ -38,7 +38,10 @@ function HomePage() {
         if (reviews.status === "fulfilled") setRecentReviews(reviews.value.data);
         else nextErrors.push("recent reviews");
         if (releases.status === "fulfilled") {
-          const newestGames = releases.value.data
+          const validGames = releases.value.data.filter(
+            (game): game is BackendGame => Boolean(game && (game._id || game.id || game.slug)),
+          );
+          const newestGames = validGames
             .filter((game, index, games) => games.findIndex((candidate) => (candidate._id || candidate.id || candidate.slug) === (game._id || game.id || game.slug)) === index)
             .sort((a, b) => {
               return parseCreatedAt(b.createdAt) - parseCreatedAt(a.createdAt);
