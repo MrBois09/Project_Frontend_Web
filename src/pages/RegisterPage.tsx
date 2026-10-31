@@ -17,11 +17,25 @@ function RegisterPage() {
     if (favoriteTags.length !== 3) { setFormError("Choose exactly 3 favorite game tags to continue."); return; }
     if (!pendingAccount) { setFormError("Please complete the account information first."); setStep(1); return; }
     setSubmitting(true); try {
+      let signedIn = false;
       if (!accountCreated) {
-        await register({ ...pendingAccount, displayName: registeredDisplayName });
-        setAccountCreated(true);
+        try {
+          await register({ ...pendingAccount, displayName: registeredDisplayName });
+          setAccountCreated(true);
+        } catch (registrationError) {
+          try {
+            await login(pendingAccount.email, pendingAccount.password);
+            setAccountCreated(true);
+            signedIn = true;
+          } catch (loginError) {
+            if (registrationError instanceof Error && loginError instanceof Error) {
+              throw new Error(`${registrationError.message} ${loginError.message}`);
+            }
+            throw registrationError;
+          }
+        }
       }
-      await login(pendingAccount.email, pendingAccount.password);
+      if (!signedIn) await login(pendingAccount.email, pendingAccount.password);
       await profileApi.update({
         displayName: String(values.get("displayName")).trim(),
         username: pendingAccount.username,
