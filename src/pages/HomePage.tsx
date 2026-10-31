@@ -59,10 +59,12 @@ function HomePage() {
 
   const featuredGame = featuredGames[0];
   const trendingGames = featuredGames.slice(1, 5);
-  const reviewedGames = recentReviews.filter((review, index, reviews) => {
-    const gameId = typeof review.gameId === "object" ? (review.gameId.id || review.gameId._id) : review.gameId;
-    return reviews.findIndex((candidate) => (typeof candidate.gameId === "object" ? (candidate.gameId.id || candidate.gameId._id) : candidate.gameId) === gameId) === index;
-  }).slice(0, 3);
+  const reviewedGames = recentReviews
+    .filter((review): review is Review => Boolean(review && review.gameId))
+    .filter((review, index, reviews) => {
+      const gameId = typeof review.gameId === "object" ? (review.gameId.id || review.gameId._id) : review.gameId;
+      return reviews.findIndex((candidate) => (typeof candidate.gameId === "object" ? (candidate.gameId.id || candidate.gameId._id) : candidate.gameId) === gameId) === index;
+    }).slice(0, 3);
   const isFeaturedWishlisted = featuredGame ? isWishlisted(featuredGame.id) : false;
 
   if (loading) return <main><div className="page-loading" role="status">Loading home page...</div></main>;
