@@ -264,6 +264,7 @@ function App() {
         <Route path="games/:gameId/reviews" element={<ReviewsPage />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="profile/:username" element={<ProfilePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
