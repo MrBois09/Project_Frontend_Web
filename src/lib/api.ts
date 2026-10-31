@@ -32,7 +32,7 @@ export type User = {
 };
 
 export type Profile = User & { stats: { totalReviews: number; averageRatingGiven: number; helpfulVotesReceived: number; favoriteGamesCount: number } };
-export type Review = { id?: string; _id?: string; title: string; content: string; rating: number; createdAt: string; updatedAt?: string; helpfulCount?: number; notHelpfulCount?: number; likesCount?: number; likeCount?: number; tags?: string[]; userId?: { id?: string; _id?: string; username?: string; displayName?: string; avatarUrl?: string }; gameId: { id?: string; _id?: string; title: string; slug?: string; coverImageUrl?: string; genres?: string[]; platforms?: string[] } };
+export type Review = { id?: string; _id?: string; title: string; content: string; rating: number; createdAt: string; updatedAt?: string; helpfulCount?: number; notHelpfulCount?: number; likesCount?: number; likeCount?: number; tags?: string[]; userId?: { id?: string; _id?: string; username?: string; displayName?: string; avatarUrl?: string }; gameId: { id?: string; _id?: string; title: string; slug?: string; coverImageUrl?: string; genres?: string[]; platforms?: string[] } | null };
 
 export type BackendGame = {
   _id: string;
